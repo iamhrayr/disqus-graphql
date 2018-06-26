@@ -55,7 +55,8 @@ module.exports = {
                 return topic.id === args.id;
             });
         },
-        users: (root, args) => {
+        users: (root, args, context) => {
+            console.log('context', context);
             return users;
         }
     },

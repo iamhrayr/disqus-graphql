@@ -1,11 +1,10 @@
-const { gql } = require('apollo-server');
+const { gql } = require('apollo-server-express');
 
 module.exports = gql`
     ###############
     ### Queries ###
     ###############
     type Query {
-        id: Int
         topics: [Topic]
         topic(id: ID): Topic
         users: [User]
