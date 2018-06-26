@@ -1,8 +1,8 @@
 const { ApolloServer } = require('apollo-server');
-const typeDefs = require('./schema/typeDefs');
-const resolvers = require('./schema/resolvers');
+const schema = require('./data/schema');
+const resolvers = require('./data/resolvers');
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ schema, resolvers });
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
