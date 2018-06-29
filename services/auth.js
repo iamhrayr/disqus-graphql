@@ -22,7 +22,6 @@ const signup = ({email, password, models}) => {
 }
 
 
-
 module.exports = {
     login,
     signup

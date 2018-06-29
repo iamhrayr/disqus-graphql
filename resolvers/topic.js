@@ -1,6 +1,7 @@
 module.exports = {
     Query: {
-        topics: (root, args, { models }) => {
+        topics: (root, args, { models, req }) => {
+            console.log(req.user);
             return models.Topic.find();
         },
         topic: (root, args, { models }) => {
