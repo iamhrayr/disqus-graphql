@@ -11,9 +11,13 @@ module.exports = gql`
         lastName: String
         topics: [Topic]
     }
+    type Auth {
+        token: String
+    }
 
     type Mutation {
-        createUser(email: String, password: String): User
+        signup(email: String, password: String): User
+        login(email: String, password: String): Auth
         createTopic(title: String, text: String, authorId: ID): Topic
     }
 `;

@@ -44,7 +44,9 @@ const server = new ApolloServer({
     resolvers,
     context: req => {
         return {
-            models
+            req,
+            models,
+            // passport
         };
     }
 });

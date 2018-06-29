@@ -1,3 +1,5 @@
+const AuthService = require('../services/auth');
+
 module.exports = {
     Query: {
         users: (root, args, { models }) => {
@@ -14,11 +16,11 @@ module.exports = {
     },
 
     Mutation: {
-        createUser: (root, args, { models }) => {
-            return new models.User({
-                email: args.email,
-                password: args.password
-            }).save();
+        signup: (root, { email, password }, { models }) => {
+            return AuthService.signup({email, password, models});
+        },
+        login: (root, { email, password }, { models }) => {
+            return AuthService.login({email, password, models});
         }
     }
 };

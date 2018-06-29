@@ -1,6 +1,6 @@
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const { secret } = require('./config');
+const { secret } = require('../config/config');
 
 module.exports = passport => {
     const opts = {};
@@ -22,3 +22,4 @@ module.exports = passport => {
         })
     );
 };
+
