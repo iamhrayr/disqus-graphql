@@ -5,6 +5,10 @@ module.exports = gql`
         id: ID
         author: User
         text: String
-        topic: Topic
+        createdAt: Date
+    }
+
+    type Mutation {
+        addComment(text: String, topic: ID): Comment
     }
 `;

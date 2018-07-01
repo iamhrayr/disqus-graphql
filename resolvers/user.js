@@ -2,10 +2,12 @@ const AuthService = require('../services/auth');
 
 module.exports = {
     Query: {
-        users: async (root, args, { models, req }) => {
-            console.log('req.user', req.user);
+        users: (root, args, { models, req }) => {
             return models.User.find();
-        }
+        },
+        me: (root, args, { models, req }) => {
+            return models.User.findById(req.user.id);
+        }, 
     },
 
     User: {

@@ -11,6 +11,6 @@ const CommentSchema = new Schema({
         type: Schema.ObjectId,
         ref: 'User'
     }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Comment', CommentSchema);
