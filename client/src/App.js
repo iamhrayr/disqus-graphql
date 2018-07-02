@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { Query } from 'react-apollo';
+// import { Query } from 'react-apollo';
 import { BrowserRouter, Route, HashRouter } from 'react-router-dom';
 
 import topicsQuery from './queries/topics';
 import Login from './components/Login';
+import Header from './components/Header';
 
 const Halelujah = props => {
     return <p>Hahelujah</p>;
@@ -21,7 +22,12 @@ class App extends Component {
             //     }}
             // </Query>
             <HashRouter>
-                <Route path="/login" component={Login} />
+                <React.Fragment>
+                    <Header />
+                    <div className="container">
+                        <Route path="/login" component={Login} />
+                    </div>
+                </React.Fragment>
             </HashRouter>
         );
     }
