@@ -20,7 +20,8 @@ export default class Login extends Component {
         });
     };
 
-    handleLoginCompleted = () => {
+    handleLoginCompleted = (data) => {
+        localStorage.token = data.login.token
         this.props.history.push('/');
     };
 
@@ -32,7 +33,7 @@ export default class Login extends Component {
 
     render() {
         return (
-            <Mutation mutation={loginMutation} onCompleted={this.handleLoginCompleted}>
+            <Mutation mutation={loginMutation} onCompleted={data => this.handleLoginCompleted(data)}>
                 {(login, { loading, error, data }) => {
                     return (
                         <form onSubmit={e => this.handleFormSubmit(e, login)}>

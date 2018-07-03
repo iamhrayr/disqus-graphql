@@ -10,12 +10,8 @@ class Header extends Component {
                         Disqus
                     </a>
                     <ul id="nav-mobile" className="right hide-on-med-and-down">
-                        <li>
-                            <Link to="/login">Login</Link>
-                        </li>
-                        <li>
-                            <Link to="/signup">Signup</Link>
-                        </li>
+                        <li><Link to="/login">Login</Link></li>
+                        <li><Link to="/signup">Signup</Link></li>
                     </ul>
                 </div>
             </nav>
