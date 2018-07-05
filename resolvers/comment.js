@@ -1,4 +1,11 @@
 module.exports = {
+    Comment: {
+        author: (root, args, { models }) => {
+            return models.User.findOne({
+                _id: root.author
+            });
+        }
+    },
     Mutation: {
         addComment: (root, { text, topic }, { req, models }) => {
             if (!req.user) {
