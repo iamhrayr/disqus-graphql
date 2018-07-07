@@ -20,6 +20,7 @@
     "merge-graphql-schemas": "^1.5.2",
     "mongoose": "^5.1.7",
     "passport": "^0.4.0",
-    "passport-jwt": "^4.0.0"
+    "passport-jwt": "^4.0.0",
+    "subscriptions-transport-ws": "^0.9.12"
   }
 }

@@ -1,4 +1,5 @@
 const path = require('path');
+const { createServer } = require('http');
 const express = require('express');
 const passport = require('passport');
 const bodyParser = require('body-parser');
@@ -6,6 +7,8 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { ApolloServer } = require('apollo-server-express');
 const { fileLoader, mergeResolvers,mergeTypes } = require('merge-graphql-schemas');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
+const { execute, subscribe } = require('graphql');
 
 const configs = require('./config/config');
 const models = require('./models');
@@ -59,3 +62,20 @@ const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log('listening on the port', PORT);
 });
+
+
+
+// // Wrap the Express server
+// const ws = createServer(app);
+// ws.listen(PORT, () => {
+//     console.log(`Apollo Server is now running on http://localhost:${PORT}`);
+//     // Set up the WebSocket for handling GraphQL subscriptions
+//     new SubscriptionServer({
+//         execute,
+//         subscribe,
+//         schema
+//     }, {
+//         server: ws,
+//         path: '/subscriptions',
+//     });
+// });

@@ -10,19 +10,13 @@ export default class Login extends Component {
         password: ''
     };
 
-    handleFormSubmit = (e, login, client) => {
+    handleFormSubmit = (e, login) => {
         e.preventDefault();
         login({
             variables: {
                 email: this.state.email,
                 password: this.state.password
             }
-        }).then(() => {
-            client.writeData({
-                data: { 
-                    auth: { __typename: 'Auth', isAuth: true } 
-                } 
-            })
         });
     };
 
@@ -39,13 +33,10 @@ export default class Login extends Component {
 
     render() {
         return (
-            <Mutation 
-                mutation={loginMutation} 
-                onCompleted={data => this.handleLoginCompleted(data)}
-            >
-                {(login, { loading, error, data, client }) => {
+            <Mutation mutation={loginMutation} onCompleted={data => this.handleLoginCompleted(data)}>
+                {(login, { loading, error, data }) => {
                     return (
-                        <form onSubmit={e => this.handleFormSubmit(e, login, client)}>
+                        <form onSubmit={e => this.handleFormSubmit(e, login)}>
                             <div className="input-field col s6">
                                 <input placeholder="Email" type="text" name="email" onChange={this.handleInputChange} />
                             </div>

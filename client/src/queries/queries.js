@@ -1,13 +1,5 @@
 import gql from 'graphql-tag';
 
-export const topicsQuery = gql`
-    {
-        topics {
-            title
-        }
-    }
-`;
-
 export const topicQuery = gql`
     query Topic($id: ID) {
         topic(id: $id) {
@@ -38,6 +30,17 @@ export const topicQuery = gql`
 export const myTopicsQuery = gql`
     {
         myTopics {
+            id
+            title
+            text
+            createdAt
+        }
+    }
+`;
+
+export const topicsQuery = gql`
+    {
+        topics {
             id
             title
             text

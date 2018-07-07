@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import {Query} from 'react-apollo';
+import {Query, Mutation} from 'react-apollo';
 
 import {topicQuery} from '../../queries/queries'
+import {addCommentMutation} from '../../mutations/mutations'
 
 class TopicDetails extends Component {
     state = {
@@ -23,9 +24,21 @@ class TopicDetails extends Component {
         });
     }
     
-    onCommentSubmit = (e) => {
+    onCommentSubmit = (e, addComment) => {
         e.preventDefault();
+        addComment({
+            variables: {
+                text: this.state.newComment, 
+                topic: this.props.match.params.id
+            }
+        });
     }
+
+    addCommentCompleted = () => [
+        this.setState({
+            newComment: ''
+        })
+    ]
     
     render() {
         const {id} = this.props.match.params;
@@ -43,16 +56,26 @@ class TopicDetails extends Component {
                                 <ul className="collection" style={{marginTop: 50}}>
                                     {this.renderComments(data.topic.comments)}
                                 </ul>
-                                
-                                <form className="input-field col s12" onSubmit={this.onCommentSubmit}>
-                                    <input 
-                                        className="materialize-textarea" 
-                                        placeholder="Write a comment..." 
-                                        name="newComment"
-                                        onChange={this.onInputChange}
-                                        value={this.state.newComment}
-                                    />
-                                </form>
+                                <Mutation 
+                                    mutation={addCommentMutation} 
+                                    refetchQueries={[{query: topicQuery, variables: {id}}]}
+                                    onCompleted={this.addCommentCompleted}
+                                >
+                                    {
+                                        (addComment, {data}) => (
+                                            <form className="input-field col s12" onSubmit={(e) => this.onCommentSubmit(e, addComment)}>
+                                                <input 
+                                                    className="materialize-textarea" 
+                                                    placeholder="Write a comment..." 
+                                                    name="newComment"
+                                                    onChange={this.onInputChange}
+                                                    value={this.state.newComment}
+                                                />
+                                            </form>
+                                        )
+                                    }
+                                   
+                                </Mutation>
                             </div>
                         )
                     }

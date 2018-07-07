@@ -11,4 +11,8 @@ module.exports = gql`
     type Mutation {
         addComment(text: String, topic: ID): Comment
     }
+
+    type Subscription {
+        commentAdded(topicId: ID): Comment
+    }
 `;
