@@ -1,5 +1,5 @@
 const path = require('path');
-const { createServer } = require('http');
+const http = require('http');
 const express = require('express');
 const passport = require('passport');
 const bodyParser = require('body-parser');
@@ -48,7 +48,7 @@ app.use('/graphql', (req, res, next) => {
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: async ({req}) => {
+    context: async ({ req }) => {
         return {
             req,
             models
@@ -56,26 +56,17 @@ const server = new ApolloServer({
     }
 });
 
+const httpServer = http.createServer(app);
+
 server.applyMiddleware({app, path: '/graphql'});
+server.installSubscriptionHandlers(httpServer);
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-    console.log('listening on the port', PORT);
-});
-
-
-
-// // Wrap the Express server
-// const ws = createServer(app);
-// ws.listen(PORT, () => {
-//     console.log(`Apollo Server is now running on http://localhost:${PORT}`);
-//     // Set up the WebSocket for handling GraphQL subscriptions
-//     new SubscriptionServer({
-//         execute,
-//         subscribe,
-//         schema
-//     }, {
-//         server: ws,
-//         path: '/subscriptions',
-//     });
+// app.listen(PORT, () => {
+//     console.log('listening on the port', PORT);
 // });
+
+httpServer.listen(PORT, () => {
+    console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
+    console.log(`🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
+})

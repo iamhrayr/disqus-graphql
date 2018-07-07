@@ -33,7 +33,6 @@ class Header extends Component {
                         </ul>
                     )
                 }
-                
             </ApolloConsumer>
         )
     }

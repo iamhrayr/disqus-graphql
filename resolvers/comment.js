@@ -1,3 +1,6 @@
+const { PubSub } = require('apollo-server');
+const pubsub = new PubSub();
+
 module.exports = {
     Comment: {
         author: (root, args, { models }) => {
@@ -13,11 +16,17 @@ module.exports = {
                 error.statusCode = 401;
                 return error;
             }
+            pubsub.publish('COMMENT_ADDED', { commentAdded: { text, topic } });
             return new models.Comment({
                 text,
                 topic,
                 author: req.user._id
             }).save();
+        }
+    },
+    Subscription: {
+        commentAdded: {
+            subscribe: () => pubsub.asyncIterator(['COMMENT_ADDED']),
         }
     }
 };
