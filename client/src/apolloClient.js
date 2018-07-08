@@ -36,6 +36,16 @@ const wsLink = new WebSocketLink({
     }
 });
 
+const link = split(
+    // split based on operation type
+    ({ query }) => {
+        const { kind, operation } = getMainDefinition(query);
+        return kind === 'OperationDefinition' && operation === 'subscription';
+    },
+    wsLink,    
+    httpLink
+);
+
 const authLink = setContext((_, { headers }) => {
     const token = localStorage.getItem('token');
     return {
@@ -46,23 +56,11 @@ const authLink = setContext((_, { headers }) => {
     }
 });
 
-const link = split(
-    // split based on operation type
-    ({ query }) => {
-        const { kind, operation } = getMainDefinition(query);
-        return kind === 'OperationDefinition' && operation === 'subscription';
-    },
-    // authLink.concat(httpLink),
-    httpLink,
-    wsLink
-);
-
 const client = new ApolloClient({
-    // link: ApolloLink.from([
-    //     stateLink,
-    //     authLink.concat(httpLink),
-    // ]),
-    link: concat(authLink, link),
+    link: ApolloLink.from([
+        stateLink,
+        authLink.concat(link),
+    ]),
     cache
 });
 
