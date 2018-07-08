@@ -59,7 +59,7 @@ const authLink = setContext((_, { headers }) => {
 const client = new ApolloClient({
     link: ApolloLink.from([
         stateLink,
-        authLink.concat(link),
+        authLink.concat(link)
     ]),
     cache
 });
