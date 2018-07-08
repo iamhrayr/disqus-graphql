@@ -5,6 +5,7 @@ const passport = require('passport');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
+const cors = require('cors')
 const { ApolloServer } = require('apollo-server-express');
 const { fileLoader, mergeResolvers,mergeTypes } = require('merge-graphql-schemas');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
@@ -33,6 +34,7 @@ require('./config/passport')(passport);
 // add middlewares
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(cors());
 app.use(passport.initialize());
 
 app.use('/graphql', (req, res, next) => {

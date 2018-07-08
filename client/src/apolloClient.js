@@ -1,10 +1,12 @@
 import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { WebSocketLink } from 'apollo-link-ws';
-import { ApolloLink, split } from 'apollo-link';
+import { ApolloLink, split, concat } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { withClientState } from 'apollo-link-state'
+import { getMainDefinition } from 'apollo-utilities';
+
 
 const cache = new InMemoryCache({
     dataIdFromObject: object => object.key || null
@@ -44,22 +46,23 @@ const authLink = setContext((_, { headers }) => {
     }
 });
 
-// const link = split(
-//     // split based on operation type
-//     ({ query }) => {
-//         const { kind, operation } = getMainDefinition(query);
-//         return kind === 'OperationDefinition' && operation === 'subscription';
-//     },
-//     wsLink,
-//     authLink,
-// );
+const link = split(
+    // split based on operation type
+    ({ query }) => {
+        const { kind, operation } = getMainDefinition(query);
+        return kind === 'OperationDefinition' && operation === 'subscription';
+    },
+    // authLink.concat(httpLink),
+    httpLink,
+    wsLink
+);
 
 const client = new ApolloClient({
-    link: ApolloLink.from([
-        stateLink,
-        authLink.concat(httpLink),
-        wsLink
-    ]),
+    // link: ApolloLink.from([
+    //     stateLink,
+    //     authLink.concat(httpLink),
+    // ]),
+    link: concat(authLink, link),
     cache
 });
 
