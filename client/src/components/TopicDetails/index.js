@@ -47,58 +47,74 @@ class TopicDetails extends Component {
         return (
             <Query query={topicQuery} variables={{ id }}>
                 {
-                    ({loading, error, data}) => {
-                        console.log(data)
+                    ({loading, error, data, subscribeToMore}) => {
                         if (loading) return <span>Loading...</span>
                         if (error) return <span>Error :(</span>
                         return (
-                            <div>
-                                <h3>{data.topic.title}</h3>
-                                <p>{data.topic.text}</p>
-                                <small>by {data.topic.author.email}</small>
-                                <ul className="collection" style={{marginTop: 50}}>
-                                    {this.renderComments(data.topic.comments)}
-                                    <Subscription subscription={commentAdded}>
-                                        {
-                                            ({ data, loading }) => {
-                                                console.log('loading', loading)
-                                                if (!loading) { 
-                                                    return <li key={data.commentAdded.id} className="collection-item">
-                                                        <strong>{data.commentAdded.author.email}</strong>
-                                                        <p>{data.commentAdded.text}</p>
-                                                    </li>
-                                                } else {
-                                                    return <div />
-                                                };
+                            <Comment 
+                                {...{loading, error, data}}
+                                subscribeToNewComments = {() =>
+                                    subscribeToMore({
+                                        document: commentAdded,
+                                        updateQuery: (prev, { subscriptionData }) => {
+                                            console.log('prev', prev)
+                                            console.log('subscriptionData', subscriptionData);
+
+                                            if (!subscriptionData.data) return prev;
+                                            const newFeedItem = subscriptionData.data.commentAdded;
+
+                                            let bubu =  {
+                                                ...prev,
+                                                topic: {
+                                                    ...prev.topic,
+                                                    comments: [
+                                                        ...prev.topic.comments,
+                                                        newFeedItem
+                                                    ]
+                                                }
                                             }
+                                            console.log('bubuuuuu', bubu)
+                                            return bubu;
+                                            // console.log('prev.topic.comments', prev.topic.comments)
+                                            // return {
+                                            //     ...prev,
+                                            //     topic: {
+                                            //         ...prev.topic,
+                                            //         comments: [
+                                            //             ...prev.topic.comments,
+                                            //             newFeedItem
+                                            //         ]
+                                            //     }
+                                            // }
                                         }
-                                    </Subscription>
-                                </ul>
-                                <Mutation 
-                                    mutation={addCommentMutation} 
-                                    // refetchQueries={[{query: topicQuery, variables: {id}}]}
-                                    onCompleted={this.addCommentCompleted}
-                                >
-                                    {
-                                        (addComment, {data}) => (
-                                            <form className="input-field col s12" onSubmit={(e) => this.onCommentSubmit(e, addComment)}>
-                                                <input 
-                                                    className="materialize-textarea" 
-                                                    placeholder="Write a comment..." 
-                                                    name="newComment"
-                                                    onChange={this.onInputChange}
-                                                    value={this.state.newComment}
-                                                />
-                                            </form>
-                                        )
-                                    }
-                                   
-                                </Mutation>
-                            </div>
+                                    })
+                                }
+                            />
+                           
                         )
                     }
                 }
             </Query>
+        )
+    }
+}
+
+
+
+class Comment extends Component {
+    componentDidMount(){
+        console.log(this.props)
+        this.props.subscribeToNewComments();
+    }
+
+    render() {
+        console.log(this.props);
+        return (
+            <span />
+            // <li key={this.props.data.commentAdded.id} className="collection-item">
+            //     <strong>{this.props.data.commentAdded.author.email}</strong>
+            //     <p>{this.props.data.commentAdded.text}</p>
+            // </li>
         )
     }
 }
