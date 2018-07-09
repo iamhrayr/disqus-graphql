@@ -16,12 +16,13 @@ module.exports = {
                 error.statusCode = 401;
                 return error;
             }
-            pubsub.publish('COMMENT_ADDED', { commentAdded: { text, topic } });
             return new models.Comment({
                 text,
                 topic,
                 author: req.user._id
-            }).save();
+            }).save().then(comment => {
+                pubsub.publish('COMMENT_ADDED', { commentAdded: comment });
+            });
         }
     },
     Subscription: {

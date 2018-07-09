@@ -43,64 +43,63 @@ class TopicDetails extends Component {
     
     render() {
         const {id} = this.props.match.params;
+    
         return (
-            <Subscription subscription={commentAdded}>
+            <Query query={topicQuery} variables={{ id }}>
                 {
-                    (obj) => {
-                        console.log('## data ##', obj)
-                        return <span>Lalalala</span>;
+                    ({loading, error, data}) => {
+                        console.log(data)
+                        if (loading) return <span>Loading...</span>
+                        if (error) return <span>Error :(</span>
+                        return (
+                            <div>
+                                <h3>{data.topic.title}</h3>
+                                <p>{data.topic.text}</p>
+                                <small>by {data.topic.author.email}</small>
+                                <ul className="collection" style={{marginTop: 50}}>
+                                    {this.renderComments(data.topic.comments)}
+                                    <Subscription subscription={commentAdded}>
+                                        {
+                                            ({ data, loading }) => {
+                                                console.log('loading', loading)
+                                                if (!loading) { 
+                                                    return <li key={data.commentAdded.id} className="collection-item">
+                                                        <strong>{data.commentAdded.author.email}</strong>
+                                                        <p>{data.commentAdded.text}</p>
+                                                    </li>
+                                                } else {
+                                                    return <div />
+                                                };
+                                            }
+                                        }
+                                    </Subscription>
+                                </ul>
+                                <Mutation 
+                                    mutation={addCommentMutation} 
+                                    // refetchQueries={[{query: topicQuery, variables: {id}}]}
+                                    onCompleted={this.addCommentCompleted}
+                                >
+                                    {
+                                        (addComment, {data}) => (
+                                            <form className="input-field col s12" onSubmit={(e) => this.onCommentSubmit(e, addComment)}>
+                                                <input 
+                                                    className="materialize-textarea" 
+                                                    placeholder="Write a comment..." 
+                                                    name="newComment"
+                                                    onChange={this.onInputChange}
+                                                    value={this.state.newComment}
+                                                />
+                                            </form>
+                                        )
+                                    }
+                                   
+                                </Mutation>
+                            </div>
+                        )
                     }
                 }
-            </Subscription>
+            </Query>
         )
-        // return (
-        //     <Query query={topicQuery} variables={{ id }}>
-        //         {
-        //             ({loading, error, data}) => {
-        //                 if (loading) return <span>Loading...</span>
-        //                 if (error) return <span>Error :(</span>
-        //                 return (
-        //                     <div>
-        //                         <h3>{data.topic.title}</h3>
-        //                         <p>{data.topic.text}</p>
-        //                         <small>by {data.topic.author.email}</small>
-        //                         <ul className="collection" style={{marginTop: 50}}>
-        //                             <Subscription subscription={onCommentAdded}>
-        //                                 {
-        //                                     ({ data, loading }) => {
-        //                                         console.log('## data ##', data)
-        //                                         return <span>Lalalala</span>;
-        //                                     }
-        //                                 }
-        //                                 {/* {this.renderComments(data.topic.comments)} */}
-        //                             </Subscription>
-        //                         </ul>
-        //                         <Mutation 
-        //                             mutation={addCommentMutation} 
-        //                             refetchQueries={[{query: topicQuery, variables: {id}}]}
-        //                             onCompleted={this.addCommentCompleted}
-        //                         >
-        //                             {
-        //                                 (addComment, {data}) => (
-        //                                     <form className="input-field col s12" onSubmit={(e) => this.onCommentSubmit(e, addComment)}>
-        //                                         <input 
-        //                                             className="materialize-textarea" 
-        //                                             placeholder="Write a comment..." 
-        //                                             name="newComment"
-        //                                             onChange={this.onInputChange}
-        //                                             value={this.state.newComment}
-        //                                         />
-        //                                     </form>
-        //                                 )
-        //                             }
-                                   
-        //                         </Mutation>
-        //                     </div>
-        //                 )
-        //             }
-        //         }
-        //     </Query>
-        // )
     }
 }
 
