@@ -10,15 +10,6 @@ class TopicDetails extends Component {
         newComment: ''        
     }
 
-    renderComments = (comments) => {
-        return comments.map(comment => (
-            <li key={comment.id} className="collection-item">
-                <strong>{comment.author.email}</strong>
-                <p>{comment.text}</p>
-            </li>
-        ))
-    }
-
     onInputChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
@@ -47,32 +38,34 @@ class TopicDetails extends Component {
         return (
             <Query query={topicQuery} variables={{ id }}>
                 {
-                    ({loading, error, data}) => {
-                        console.log(data)
-                        if (loading) return <span>Loading...</span>
-                        if (error) return <span>Error :(</span>
+                    ({subscribeToMore, ...result}) => {
+                        if (result.loading) return <span>Loading...</span>
+                        if (result.error) return <span>Error :(</span>
                         return (
                             <div>
-                                <h3>{data.topic.title}</h3>
-                                <p>{data.topic.text}</p>
-                                <small>by {data.topic.author.email}</small>
+                                <h3>{result.data.topic.title}</h3>
+                                <p>{result.data.topic.text}</p>
+                                <small>by {result.data.topic.author.email}</small>
                                 <ul className="collection" style={{marginTop: 50}}>
-                                    {this.renderComments(data.topic.comments)}
-                                    <Subscription subscription={commentAdded}>
-                                        {
-                                            ({ data, loading }) => {
-                                                console.log('loading', loading)
-                                                if (!loading) { 
-                                                    return <li key={data.commentAdded.id} className="collection-item">
-                                                        <strong>{data.commentAdded.author.email}</strong>
-                                                        <p>{data.commentAdded.text}</p>
-                                                    </li>
-                                                } else {
-                                                    return <div />
-                                                };
-                                            }
-                                        }
-                                    </Subscription>
+                                    <CommentList 
+                                        {...result}
+                                        subscribeToNewComments = {() => {
+                                            subscribeToMore({
+                                                document: commentAdded,
+                                                updateQuery: (prev, { subscriptionData }) => {
+                                                    if (!subscriptionData.data) return prev;
+                                                    const newFeedItem = subscriptionData.data.commentAdded;
+
+                                                    return Object.assign({}, prev, {
+                                                        topic: {
+                                                            ...prev.topic,
+                                                            comments: [newFeedItem, ...prev.topic.comments]
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }}
+                                    />
                                 </ul>
                                 <Mutation 
                                     mutation={addCommentMutation} 
@@ -99,6 +92,31 @@ class TopicDetails extends Component {
                     }
                 }
             </Query>
+        )
+    }
+}
+
+
+class CommentList extends Component {
+    componentDidMount(){
+        this.props.subscribeToNewComments();
+    }
+    
+    renderComments = (comments) => {
+        return comments.map(comment => (
+            <li key={comment.id} className="collection-item">
+                <strong>{comment.author.email}</strong>
+                <p>{comment.text}</p>
+            </li>
+        ))
+    }
+
+    render(){
+        const {loading, data} = this.props
+        return (
+            <div>
+                {this.renderComments(data.topic.comments)}
+            </div>
         )
     }
 }
