@@ -39,6 +39,7 @@ class TopicDetails extends Component {
             <Query query={topicQuery} variables={{ id }}>
                 {
                     ({subscribeToMore, ...result}) => {
+                        console.log('result', result)
                         if (result.loading) return <span>Loading...</span>
                         if (result.error) return <span>Error :(</span>
                         return (
@@ -52,10 +53,10 @@ class TopicDetails extends Component {
                                         subscribeToNewComments = {() => {
                                             subscribeToMore({
                                                 document: commentAdded,
+                                                variables: {id},
                                                 updateQuery: (prev, { subscriptionData }) => {
                                                     if (!subscriptionData.data) return prev;
                                                     const newFeedItem = subscriptionData.data.commentAdded;
-
                                                     return Object.assign({}, prev, {
                                                         topic: {
                                                             ...prev.topic,

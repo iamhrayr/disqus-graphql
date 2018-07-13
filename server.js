@@ -10,6 +10,7 @@ const { ApolloServer } = require('apollo-server-express');
 const { fileLoader, mergeResolvers,mergeTypes } = require('merge-graphql-schemas');
 const { SubscriptionServer } = require('subscriptions-transport-ws');
 const { execute, subscribe } = require('graphql');
+const { makeExecutableSchema } = require('graphql-tools');
 
 const configs = require('./config/config');
 const models = require('./models');
@@ -19,6 +20,10 @@ const typesArray = fileLoader(path.join(__dirname, './schema'));
 const typeDefs = mergeTypes(typesArray);
 const resolversArray = fileLoader(path.join(__dirname, './resolvers'));
 const resolvers = mergeResolvers(resolversArray);
+const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+});
 
 // init express server
 const app = express();
@@ -61,7 +66,7 @@ const server = new ApolloServer({
 const httpServer = http.createServer(app);
 
 server.applyMiddleware({app, path: '/graphql'});
-server.installSubscriptionHandlers(httpServer);
+// server.installSubscriptionHandlers(httpServer);
 
 const PORT = process.env.PORT || 4000;
 // app.listen(PORT, () => {
@@ -71,4 +76,36 @@ const PORT = process.env.PORT || 4000;
 httpServer.listen(PORT, () => {
     console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
     console.log(`🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
+
+
+    new SubscriptionServer({
+        execute,
+        subscribe,
+        schema,
+        context: async ({ req }) => {
+            return {
+                req,
+                models
+            };
+        },
+        onConnect: (connectionParams, webSocket) => {
+            // console.log('connectionParams', connectionParams);
+            return {
+                models,
+            }
+            // let req = {}
+            // return checkToken(connectionParams.token, function(payload) {
+            //     return {
+            //         user: {
+            //             id: payload.userId,
+            //             exp: payload.exp,
+            //             iat: payload.iat,
+            //         },
+            //     }
+            // })
+        },
+    }, {
+        server: httpServer,
+        path: "/graphql",
+    })
 })
