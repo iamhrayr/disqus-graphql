@@ -41,6 +41,7 @@ class TopicDetails extends Component {
                     ({subscribeToMore, ...result}) => {
                         if (result.loading) return <span>Loading...</span>
                         if (result.error) return <span>Error :(</span>
+                        console.log('@@@ result @@@', result);
                         return (
                             <div>
                                 <h3>{result.data.topic.title}</h3>
@@ -54,14 +55,18 @@ class TopicDetails extends Component {
                                                 document: commentAdded,
                                                 variables: {id},
                                                 updateQuery: (prev, { subscriptionData }) => {
+                                                    console.log('@@@ prev @@@', prev);
+                                                    console.log('@@@ subscriptionData @@@', subscriptionData);
                                                     if (!subscriptionData.data) return prev;
                                                     const newFeedItem = subscriptionData.data.commentAdded;
-                                                    return Object.assign({}, prev, {
+                                                    console.log('!@ newFeedItem @!', newFeedItem)
+                                                    return {
+                                                        ...prev,
                                                         topic: {
                                                             ...prev.topic,
-                                                            comments: [newFeedItem, ...prev.topic.comments]
+                                                            comments: [...prev.topic.comments, newFeedItem]
                                                         }
-                                                    });
+                                                    }
                                                 }
                                             });
                                         }}
@@ -98,6 +103,9 @@ class TopicDetails extends Component {
 
 
 class CommentList extends Component {
+    componentDidUpdate(){
+        console.log('update', this.props)
+    }
     componentDidMount(){
         this.props.subscribeToNewComments();
     }

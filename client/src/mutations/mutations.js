@@ -8,6 +8,14 @@ export const loginMutation = gql`
     }
 `;
 
+export const signupMutation = gql`
+    mutation signup($email: String!, $password: String!) {
+        signup(email: $email, password: $password) {
+            id
+        }
+    }
+`;
+
 export const addCommentMutation = gql`
     mutation addComment($text: String!, $topic: ID!) {
         addComment(text: $text, topic: $topic) {

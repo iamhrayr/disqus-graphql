@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Query, Mutation } from 'react-apollo';
 import { Redirect } from 'react-router-dom';
 
-import {loginMutation} from '../../mutations/mutations';
+import {signupMutation} from '../../mutations/mutations';
 
 export default class Login extends Component {
     state = {
@@ -20,9 +20,8 @@ export default class Login extends Component {
         });
     };
 
-    handleLoginCompleted = (data) => {
-        localStorage.token = data.login.token
-        this.props.history.push('/');
+    handleSignupCompleted = (data) => {
+        this.props.history.push('/login');
     };
 
     handleInputChange = e => {
@@ -33,7 +32,7 @@ export default class Login extends Component {
 
     render() {
         return (
-            <Mutation mutation={loginMutation} onCompleted={data => this.handleLoginCompleted(data)}>
+            <Mutation mutation={signupMutation} onCompleted={data => this.handleSignupCompleted(data)}>
                 {(login, { loading, error, data }) => {
                     return (
                         <form onSubmit={e => this.handleFormSubmit(e, login)}>

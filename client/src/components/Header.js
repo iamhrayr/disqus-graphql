@@ -53,7 +53,6 @@ class Header extends Component {
             <Query query={query}>
                 {
                     ({data, loading}) => {
-                        console.log('data', data)
                         return (
                             <nav>
                                 <div className="nav-wrapper">
