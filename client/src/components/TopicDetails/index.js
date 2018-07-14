@@ -39,7 +39,6 @@ class TopicDetails extends Component {
             <Query query={topicQuery} variables={{ id }}>
                 {
                     ({subscribeToMore, ...result}) => {
-                        console.log('result', result)
                         if (result.loading) return <span>Loading...</span>
                         if (result.error) return <span>Error :(</span>
                         return (

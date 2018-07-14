@@ -14,6 +14,7 @@ const { makeExecutableSchema } = require('graphql-tools');
 
 const configs = require('./config/config');
 const models = require('./models');
+const userFromAuthToken = require('./helpers/userFromAuthToken');
 
 // merge graphql resolvers and types
 const typesArray = fileLoader(path.join(__dirname, './schema'));
@@ -69,10 +70,6 @@ server.applyMiddleware({app, path: '/graphql'});
 // server.installSubscriptionHandlers(httpServer);
 
 const PORT = process.env.PORT || 4000;
-// app.listen(PORT, () => {
-//     console.log('listening on the port', PORT);
-// });
-
 httpServer.listen(PORT, () => {
     console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`)
     console.log(`🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`)
@@ -90,8 +87,12 @@ httpServer.listen(PORT, () => {
         },
         onConnect: (connectionParams, webSocket) => {
             // console.log('connectionParams', connectionParams);
-            return {
-                models,
+            if (connectionParams.authToken) {
+                const user = userFromAuthToken(connectionParams.authToken);
+                return {
+                    models,
+                    user
+                }
             }
             // let req = {}
             // return checkToken(connectionParams.token, function(payload) {
