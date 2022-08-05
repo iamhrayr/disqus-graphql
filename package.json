@@ -21,7 +21,7 @@
     "graphql-tools": "^3.0.5",
     "jsonwebtoken": "^8.3.0",
     "merge-graphql-schemas": "^1.5.2",
-    "mongoose": "^5.1.7",
+    "mongoose": "^5.7.5",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0"
   }
